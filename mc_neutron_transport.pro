@@ -6,7 +6,9 @@ CONFIG -= qt
 SOURCES += main.cpp \
     pugixml.cpp \
     ace.cpp \
-    xslisting.cpp
+    xslisting.cpp \
+    global.cpp \
+    input_xml.cpp
 
 DISTFILES +=
 
@@ -15,4 +17,5 @@ HEADERS += \
     pugixml.hpp \
     ace.h \
     xslisting.h \
-    global.h
+    global.h \
+    input_xml.h

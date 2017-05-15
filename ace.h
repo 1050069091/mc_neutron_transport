@@ -6,6 +6,8 @@ class ace
 {
 public:
     ace();
+public:
+
 };
 
 #endif // ACE_H

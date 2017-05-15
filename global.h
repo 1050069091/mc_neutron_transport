@@ -14,6 +14,8 @@ public:
 
     static map<string,xslisting> *xsliistings;
 
+    static const int BINARY,ASCII,ACE_NEUTRON,ACE_THERMAL;
+
 };
 
 #endif // GLOBAL_H

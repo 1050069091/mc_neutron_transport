@@ -3,7 +3,69 @@
 #include "xslisting.h"
 #include "pugixml.hpp"
 #include "iostream"
+#include "nuclide.h"
 
+void input_xml::read_xml(){
+
+    input_xml::read_cross_sections_xml();
+
+    input_xml::read_materials_xml();
+
+    map<string,nuclide>::iterator it;
+
+    for(it=global::gmaterials->nuclides->begin();it!=global::gmaterials->nuclides->end();it++)
+        std::cout << it->first << std::endl ;
+
+}
+
+void input_xml::read_materials_xml()
+{
+    pugi::xml_document doc;
+    pugi::xml_parse_result result;
+    pugi::xml_node materials_xml_node,tmp_xml_node;
+    pugi::xml_attribute tmp_xml_attribute;
+
+    nuclide *tmp_nuclide ;
+
+    string default_xs,tmp_xs;
+
+    result = doc.load_file("materials.xml");
+
+    if(!result)
+    {
+        std::cout << "read materials.xm failed\n";
+        exit(-1);
+    }
+
+    materials_xml_node = doc.child("materials");//default_xs
+
+    tmp_xml_node = materials_xml_node.child("default_xs");
+    default_xs = tmp_xml_node.child_value();
+
+    tmp_xml_node = materials_xml_node.child("geometry");
+    global::gmaterials->geometry_x = tmp_xml_node.attribute("x").as_double();
+    global::gmaterials->geometry_y = tmp_xml_node.attribute("y").as_double();
+    global::gmaterials->geometry_z = tmp_xml_node.attribute("z").as_double();
+
+    std::cout << global::gmaterials->geometry_x << default_xs << std::endl;
+
+    tmp_xml_node = materials_xml_node.child("density");
+    global::gmaterials->density = tmp_xml_node.attribute("value").as_double();
+
+    for (pugi::xml_node tmp_node: materials_xml_node.children("nuclide"))
+    {
+        tmp_nuclide = new nuclide();
+        tmp_nuclide->name = tmp_node.attribute("name").as_string();
+        tmp_nuclide->awr = tmp_node.attribute("ao").as_double();
+        if(!(tmp_xml_attribute=tmp_node.attribute("xs")).empty())
+            tmp_xs = tmp_xml_attribute.as_string();
+        else
+            tmp_xs = default_xs;
+
+        (*global::gmaterials->nuclides)[tmp_nuclide->name+"."+tmp_xs] = *tmp_nuclide;
+    }
+
+}
 
 void input_xml::read_cross_sections_xml()
 {
@@ -14,7 +76,7 @@ void input_xml::read_cross_sections_xml()
 
     int filetype = global::ASCII;
     int recl,entries;
-    string filetype_str;
+    string filetype_str,tmp_key_str;
 
     xslisting *p_tmp_xslisting;
 
@@ -75,15 +137,34 @@ void input_xml::read_cross_sections_xml()
                 p_tmp_xslisting->filetype = global::BINARY;
             }
             else{
-                p_tmp_xslisting->filetype = global::ASCII
+                p_tmp_xslisting->filetype = global::ASCII;
             }
         }else{
             p_tmp_xslisting->filetype = filetype;
         }
+
+        if(!(tmp_xml_attribute = tmp_node.attribute("metastable")).empty())
+            p_tmp_xslisting->metastable = true;
+
+        p_tmp_xslisting->path = tmp_node.attribute("path").as_string();
+
+        if(p_tmp_xslisting->filetype == global::BINARY)
+        {
+            p_tmp_xslisting->recl = recl;
+            p_tmp_xslisting->entries = entries;
+        }
+
+        tmp_key_str = p_tmp_xslisting->alias;
+        if(tmp_key_str == "NULL")
+            tmp_key_str = p_tmp_xslisting->name;
+
+        (*global::xsliistings)[tmp_key_str] = *p_tmp_xslisting;
+
 //        std::cout << "    name:"<< p_tmp_xslisting->name << "    alias:"<< p_tmp_xslisting->alias
 //                  << "    zaid:"<< p_tmp_xslisting->zaid << "    awr:"<< p_tmp_xslisting->awr
 //                  << "    kT:"<< p_tmp_xslisting->kT << "    location:"<< p_tmp_xslisting->location
-//                  << "    type:"<< p_tmp_xslisting->type << std::endl;
+//                  << "    type:"<< p_tmp_xslisting->type << "    filetype:"<< p_tmp_xslisting->filetype
+//                  << std::endl;
     }
 
 }

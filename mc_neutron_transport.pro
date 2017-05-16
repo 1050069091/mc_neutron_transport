@@ -8,9 +8,12 @@ SOURCES += main.cpp \
     ace.cpp \
     xslisting.cpp \
     global.cpp \
-    input_xml.cpp
+    input_xml.cpp \
+    materials.cpp \
+    nuclide.cpp
 
-DISTFILES +=
+DISTFILES += \
+    materials.xml
 
 HEADERS += \
     pugiconfig.hpp \
@@ -18,4 +21,6 @@ HEADERS += \
     ace.h \
     xslisting.h \
     global.h \
-    input_xml.h
+    input_xml.h \
+    materials.h \
+    nuclide.h

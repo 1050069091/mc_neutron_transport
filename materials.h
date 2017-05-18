@@ -13,6 +13,8 @@ public:
     static map<string,nuclide> *nuclides;
     static double geometry_x,geometry_y,geometry_z;
     static double density;
+
+    static std::vector<double> *atom_density;
 //    static string xs_name;
 };
 

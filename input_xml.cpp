@@ -11,10 +11,51 @@ void input_xml::read_xml(){
 
     input_xml::read_materials_xml();
 
-    map<string,nuclide>::iterator it;
+    input_xml::read_source_xml();
 
-    for(it=global::gmaterials->nuclides->begin();it!=global::gmaterials->nuclides->end();it++)
-        std::cout << it->first << std::endl ;
+//    map<string,nuclide>::iterator it;
+
+//    for(it=global::gmaterials->nuclides->begin();it!=global::gmaterials->nuclides->end();it++)
+//        std::cout << it->first << std::endl ;
+
+}
+
+void input_xml::read_source_xml()
+{
+    pugi::xml_document doc;
+    pugi::xml_parse_result result;
+    pugi::xml_node source_xml_node,tmp_xml;
+
+    result = doc.load_file("source.xml");
+
+    if(!result)
+    {
+        std::cout << "read source.xm failed\n";
+        exit(-1);
+    }
+    source_xml_node = doc.child("source");//default_xs
+
+    global::gsource->particle_num = source_xml_node.child("particle_num").attribute("count").as_int();
+
+    global::gsource->max_angle = source_xml_node.child("direction").attribute("max_angle").as_double();
+
+    tmp_xml = source_xml_node.child("default_engery");
+    global::gsource->max_engery = tmp_xml.attribute("max").as_double();
+    global::gsource->min_engery = tmp_xml.attribute("min").as_double();
+
+    tmp_xml = source_xml_node.child("location");
+    global::gsource->site_xyz[0] = tmp_xml.attribute("x").as_double();
+    global::gsource->site_xyz[1] = tmp_xml.attribute("y").as_double();
+    global::gsource->site_xyz[2] = tmp_xml.attribute("z").as_double();
+
+//    std::cout << global::gsource->particle_num << "\t"
+//                 << global::gsource->max_angle << "\t"
+//                    << global::gsource->max_engery << "\t"
+//                       << global::gsource->min_engery << "\t"
+//                          << global::gsource->site_xyz[0] << "\t"
+//                             << global::gsource->site_xyz[1] << "\t"
+//                                << global::gsource->site_xyz[2] << "\n";
+
 
 }
 
@@ -47,7 +88,7 @@ void input_xml::read_materials_xml()
     global::gmaterials->geometry_y = tmp_xml_node.attribute("y").as_double();
     global::gmaterials->geometry_z = tmp_xml_node.attribute("z").as_double();
 
-    std::cout << global::gmaterials->geometry_x << default_xs << std::endl;
+//    std::cout << global::gmaterials->geometry_x << default_xs << std::endl;
 
     tmp_xml_node = materials_xml_node.child("density");
     global::gmaterials->density = tmp_xml_node.attribute("value").as_double();
@@ -61,8 +102,9 @@ void input_xml::read_materials_xml()
             tmp_xs = tmp_xml_attribute.as_string();
         else
             tmp_xs = default_xs;
+        tmp_nuclide->key_in_xsmap = tmp_nuclide->name+"."+tmp_xs;
 
-        (*global::gmaterials->nuclides)[tmp_nuclide->name+"."+tmp_xs] = *tmp_nuclide;
+        (*global::gmaterials->nuclides)[tmp_nuclide->key_in_xsmap] = *tmp_nuclide;
     }
 
 }

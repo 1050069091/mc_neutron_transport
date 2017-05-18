@@ -10,7 +10,9 @@ SOURCES += main.cpp \
     global.cpp \
     input_xml.cpp \
     materials.cpp \
-    nuclide.cpp
+    nuclide.cpp \
+    particle.cpp \
+    source.cpp
 
 DISTFILES += \
     materials.xml
@@ -23,4 +25,6 @@ HEADERS += \
     global.h \
     input_xml.h \
     materials.h \
-    nuclide.h
+    nuclide.h \
+    particle.h \
+    source.h

@@ -20,20 +20,32 @@ public:
     //map xslistings中的key值
     std::string key_in_xsmap;
 
+    //反应信息
+
+    int reaction_num;
+    std::vector<int> *reaction_mts;
+    std::vector<double> *Q_values;
+
+    std::vector<int> *thresholds;
+    std::vector<std::vector<double> *> *reaction_cs_values;
+
 
     //宏观截面信息
+    int macro_length;
+
+    std::vector<double> *energy;
     //total cross section
-//    std::vector<double> *total;
-//    //elastic scattering
-//    std::vector<double> *elastic;
-//    //fission
-//    std::vector<double> *fission;
-//    //neutron production
-//    std::vector<double> *nu_fission;
-//    //absorption (MT > 100)
-//    std::vector<double> *absorption;
-//    //heating
-//    std::vector<double> *heating;
+    std::vector<double> *total;
+    //elastic scattering
+    std::vector<double> *elastic;
+    //fission
+    std::vector<double> *fission;
+    //neutron production
+    std::vector<double> *nu_fission;
+    //absorption (MT > 100)
+    std::vector<double> *absorption;
+    //heating
+    std::vector<double> *heating;
 
 };
 

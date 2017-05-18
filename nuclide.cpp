@@ -12,6 +12,7 @@ nuclide::nuclide()
     //map xslistings中的key值
     this->key_in_xsmap = "NULL";
 
+    this->can_fissioable = false;
 
     this->reaction_num = -1;
     this->reaction_mts = new std::vector<int>();
@@ -19,6 +20,7 @@ nuclide::nuclide()
     this->thresholds = new std::vector<int>();
 
     this->reaction_cs_values = new std::vector<std::vector<double> *>();
+    this->angle_values = new std::vector<std::vector<double> *>();
 
     this->macro_length = -1;
     this->energy = new std::vector<double>();

@@ -29,6 +29,10 @@ public:
     std::vector<int> *thresholds;
     std::vector<std::vector<double> *> *reaction_cs_values;
 
+    std::vector<std::vector<double> *> *angle_values;
+
+
+    bool can_fissioable;
 
     //宏观截面信息
     int macro_length;

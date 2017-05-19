@@ -190,28 +190,72 @@ void ace::read_ace_xs(){
             }
 
 //            for(int i=0;i<NXS[2];i++){
-//                std::cout << "total:" << (*(it->second.total))[i]
-//                             << "elastic:" << (*(it->second.elastic))[i]
-//                                << "absorption:" << (*(it->second.absorption))[i];
-//                if(it->second.can_fissioable){
-//                    std::cout << "fission:" << (*(it->second.fission))[i];
-//                }
-//                std::cout << "nu_fission:" << (*(it->second.nu_fission))[i]<< std::endl;
+//                std::cout<< "energy:" << (*(it->second.energy))[i]
+//                        << "\ttotal:" << (*(it->second.total))[i] << std::endl;
+////                             << "\telastic:" << (*(it->second.elastic))[i]
+////                                << "\tabsorption:" << (*(it->second.absorption))[i] << std::endl;
+////                if(it->second.can_fissioable){
+////                    std::cout << "fission:" << (*(it->second.fission))[i];
+////                }
+////                std::cout << "nu_fission:" << (*(it->second.nu_fission))[i]<< std::endl;
 
 //            }
 
 
             //读取碰撞后次级中子的角分布
+            int LOBCi,LCj;
+            int JXS7 = JXS[7] - 1,JXS8 = JXS[8] - 1;
 
-//            XSS_index = JXS[7] - 1;
-//            loc = JXS[8] - 1;
+            for(int i=0;i<NXS[4]+1;i++){  //有次级中子产生的反应种类数(包括弹性散射)
 
-//            for(int i=0;i<NXS[4]+1;i++){  //有次级中子产生的反应种类数
+               LOBCi = XSS[JXS7 + i];
 
-//               tmp_loc = loc + int(XSS[XSS_index]) - 1;
+               angle_enger_dist *tmp_p_angle_enger_dist = new angle_enger_dist();
 
-//               XSS_index1 = tmp_loc + 1;
-//               std::vector<double> *tmp_vector = new std::vector<double>();
+               tmp_p_angle_enger_dist->engery_num = int(XSS[JXS8 + LOBCi - 1]);
+
+               for(int j=0;j<tmp_p_angle_enger_dist->engery_num;j++){
+
+                    tmp_p_angle_enger_dist->engery_grid->push_back(XSS[JXS8 + LOBCi + j]);
+
+                    LCj = int(XSS[JXS8 + LOBCi + j + tmp_p_angle_enger_dist->engery_num]);
+
+                    tmp_p_angle_enger_dist->loc_angle_val->push_back(LCj);
+
+                    if(LCj > 0){  //32分布
+
+                        double *tm_p_do = new double[32];
+                        for(int k=0;k<32;k++){
+                            *(tm_p_do + k) =
+                                    XSS[JXS8 + LCj - 1 + k];//JXS(9)+|LC(J)|−1
+                        }
+                        tmp_p_angle_enger_dist->angle_vals_32->push_back(tm_p_do);
+
+                    }else if(LCj < 0)
+                    {
+
+                        tmp_p_angle_enger_dist->flags->push_back(XSS[JXS8 - LCj -1]);
+                        int tmp_size = XSS[JXS8 - LCj];
+
+                        tmp_p_angle_enger_dist->angle_num->push_back(tmp_size);
+
+
+                        std::vector<double> *tmp_p_vector1 = new  std::vector<double>;
+                        std::vector<double> *tmp_p_vector2 = new  std::vector<double>;
+                        std::vector<double> *tmp_p_vector3 = new  std::vector<double>;
+
+                        for(int k=0;k<tmp_size;k++){
+                            tmp_p_vector1->push_back(XSS[JXS8 - LCj + 1 + k]);
+                            tmp_p_vector2->push_back(XSS[JXS8 - LCj + 1 + k + tmp_size]);
+                            tmp_p_vector3->push_back(XSS[JXS8 - LCj + 1 + k + 2*tmp_size]);
+                        }
+                        tmp_p_angle_enger_dist->consines->push_back(tmp_p_vector1);
+                        tmp_p_angle_enger_dist->pdf->push_back(tmp_p_vector2);
+                        tmp_p_angle_enger_dist->cdf->push_back(tmp_p_vector3);
+                    }
+//                    XSS_index1 ++;
+               }
+
 
 //               if(int(XSS[XSS_index]) > 0) {
 //                   for(int j=0;j<int(XSS[tmp_loc]);j++){
@@ -219,43 +263,20 @@ void ace::read_ace_xs(){
 //                        XSS_index1 ++;
 //                   }
 //               }
-//               it->second.angle_values->push_back(tmp_vector);
+               it->second.angle_values->push_back(tmp_p_angle_enger_dist);
 //               XSS_index ++;
-
-//            }
+            }
 
 
 
             //读取碰撞后次级中子的能量分布
-            XSS_index = JXS[9] - 1;
-            loc = JXS[10] - 1;
+//            int LOCCi;
+//            int JXS9 = JXS[9] - 1,JXS10 = JXS[10] - 1;
 
-            for(int i=0;i<NXS[4];i++){  //有次级中子产生的反应种类数(不包括弹性散射)
+//            for(int i=0;i<NXS[4];i++){  //有次级中子产生的反应种类数(不包括弹性散射)
 
-               tmp_loc = loc + int(XSS[XSS_index]) - 1;
-
-               XSS_index1 = tmp_loc;
-               std::vector<double> *tmp_vector = new std::vector<double>();
-
-               std::cout << i << ":" << XSS[XSS_index] << "<----->"
-                         << ":" << XSS[XSS_index1] << ":" << XSS[XSS_index1+1]
-                         << ":" << XSS[XSS_index1+2] << ":" << XSS[XSS_index1+3]
-                         << "\t";
-
-//               if(int(XSS[XSS_index]) > 0) {
-//                   for(int j=0;j<(int(XSS[XSS_index+1])-int(XSS[XSS_index]));j++){
-////                        tmp_vector->push_back(XSS[XSS_index1]);
-//                       XSS_index1 ++;
-//                       std::cout << j << ":" << XSS[XSS_index1] << "\t";
-//                   }
-//               }
-               it->second.engery_values->push_back(tmp_vector);
-               XSS_index ++;
-            }
-
-            std::cout << "----------------------" << std::endl;
-
-
+//                LOCCi = int(XSS[JXS8 + i]);
+//            }
 
         }else
         {

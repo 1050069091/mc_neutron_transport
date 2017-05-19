@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <angle_enger_dist.h>
 
 class nuclide
 {
@@ -31,8 +32,8 @@ public:
 
     std::vector<int> *second_particle_num_dis;
 
-    std::vector<std::vector<double> *> *angle_values;
-    std::vector<std::vector<double> *> *engery_values;
+    std::vector<angle_enger_dist *> *angle_values;
+//    std::vector<std::vector<double> *> *engery_values;
 
 
     bool can_fissioable;

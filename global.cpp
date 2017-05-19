@@ -26,10 +26,61 @@ void global::init(){
 
     global::convert_density();
 
+//    global::gmaterials->nuclides;
+
     srand((unsigned)time(NULL));
     global::init_particles();
+
+//    std::cout << global::get_mat_total_val(0.1) << std::endl;
+
 }
 
+double global::get_mat_total_val(double engery){
+
+    double mat_total = 0.0;
+    int index;
+    for(std::map<string,nuclide>::iterator it= global::gmaterials->nuclides->begin();
+        it != global::gmaterials->nuclides->end();it++){
+        index = global::binary_search(engery,it->second.energy);
+
+//        std::cout << index << ":" << (*(it->second.total))[index] << ":" << it->second.awr << std::endl;
+        mat_total += (*(it->second.total))[index] * (it->second.awr);
+    }
+    return mat_total;
+
+}
+
+int global::binary_search(double gloal,std::vector<double> *tmp){
+
+//    int mid;
+
+    int size = tmp->size();
+
+    if(gloal <= (*tmp)[0]) return 0;
+    if(gloal >= (*tmp)[size-1]) return size-1;
+
+//    if(low >= high) return low;
+
+//    mid = floor((high+low)/2);
+
+//    if((*tmp)[mid -1] > gloal)
+//        return global::binary_search(gloal,tmp,low,mid -1);
+
+//    if((*tmp)[mid + 1] > gloal)
+//        return global::binary_search(gloal,tmp,mid,high);
+
+//    if((*tmp)[mid -1] <= gloal && (*tmp)[mid] > gloal)
+//        return mid -1;
+
+//    if((*tmp)[mid] <= gloal && (*tmp)[mid+1] > gloal)
+//        return mid;
+
+    for(int i=0;i<tmp->size();i++){
+        if((*tmp)[i] <= gloal && (*tmp)[i+1] > gloal)
+            return i;
+    }
+
+}
 
 void global::convert_density(){
 
@@ -40,12 +91,6 @@ void global::convert_density(){
     {
         sum_percent += (it->second).awr;
     }
-
-//    for(std::map<string,nuclide>::iterator it= global::gmaterials->nuclides->begin();
-//        it != global::gmaterials->nuclides->end();it++)
-//    {
-//        std::cout << it->first << ":  " << (it->second).awr << std::endl;
-//    }
 
     for(std::map<string,nuclide>::iterator it= global::gmaterials->nuclides->begin();
         it != global::gmaterials->nuclides->end();it++)
@@ -64,25 +109,11 @@ void global::convert_density(){
 
     global::gmaterials->density = global::gmaterials->density * global::N_AVOGADRO / global::MASS_NEUTRON * sum_percent;
 
-
     for(std::map<string,nuclide>::iterator it= global::gmaterials->nuclides->begin();
         it != global::gmaterials->nuclides->end();it++)
     {
         (it->second).awr = (it->second).awr * global::gmaterials->density;
     }
-
-//    for(std::map<string,nuclide>::iterator it= global::gmaterials->nuclides->begin();
-//        it != global::gmaterials->nuclides->end();it++)
-//    {
-//        std::cout << it->first << ":  " << (it->second).awr << std::endl;
-//    }
-
-
-//    mat%density = -mat%density * N_AVOGADRO &
-//                 / MASS_NEUTRON * sum_percent
-
-
-
 }
 
 void global::init_particles(){

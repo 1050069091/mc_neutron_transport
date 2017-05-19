@@ -24,8 +24,9 @@ nuclide::nuclide()
 
     this->second_particle_num_dis = new std::vector<int>();
 
-    this->angle_values = new std::vector<std::vector<double> *>();
-     this->engery_values = new std::vector<std::vector<double> *>();
+    this->angle_values = new std::vector<angle_enger_dist *>();
+
+//    this->engery_values = new std::vector<std::vector<double> *>();
 
     this->macro_length = -1;
     this->energy = new std::vector<double>();

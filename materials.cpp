@@ -10,4 +10,6 @@ double materials::density = -1.0;
 
 std::vector<double> *materials::atom_density = new std::vector<double>;
 
+std::vector<double> *materials::mat_total = new std::vector<double>;
+
 //string materials::xs_name = "";

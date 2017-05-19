@@ -28,6 +28,9 @@ public:
     static const double N_AVOGADRO,MASS_NEUTRON;
 
     static void convert_density();
+    static double get_mat_total_val(double engery);
+    static  int binary_search(double gloal,std::vector<double> *tmp);
+
     static void init_particles();
     static void init();
 

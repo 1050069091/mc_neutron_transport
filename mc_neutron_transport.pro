@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     materials.cpp \
     nuclide.cpp \
     particle.cpp \
-    source.cpp
+    source.cpp \
+    angle_enger_dist.cpp
 
 DISTFILES += \
     materials.xml
@@ -27,4 +28,5 @@ HEADERS += \
     materials.h \
     nuclide.h \
     particle.h \
-    source.h
+    source.h \
+    angle_enger_dist.h

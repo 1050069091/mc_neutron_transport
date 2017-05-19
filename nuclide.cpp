@@ -19,8 +19,13 @@ nuclide::nuclide()
     this->Q_values = new std::vector<double>();
     this->thresholds = new std::vector<int>();
 
+
     this->reaction_cs_values = new std::vector<std::vector<double> *>();
+
+    this->second_particle_num_dis = new std::vector<int>();
+
     this->angle_values = new std::vector<std::vector<double> *>();
+     this->engery_values = new std::vector<std::vector<double> *>();
 
     this->macro_length = -1;
     this->energy = new std::vector<double>();

@@ -29,7 +29,10 @@ public:
     std::vector<int> *thresholds;
     std::vector<std::vector<double> *> *reaction_cs_values;
 
+    std::vector<int> *second_particle_num_dis;
+
     std::vector<std::vector<double> *> *angle_values;
+    std::vector<std::vector<double> *> *engery_values;
 
 
     bool can_fissioable;

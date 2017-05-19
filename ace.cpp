@@ -80,6 +80,10 @@ void ace::read_ace_xs(){
 //                XSS_index2 ++;
             }
 
+
+
+            //读取反应类型信息
+
             XSS_index = JXS[2] - 1;
             XSS_index1 = JXS[3] - 1;
             (it->second).reaction_num = NXS[3] /*+ 1*/;
@@ -95,6 +99,7 @@ void ace::read_ace_xs(){
             }
 
             int tmp_loc,loc;
+
             XSS_index = JXS[5] - 1;
             loc = JXS[6] - 1;
 
@@ -130,8 +135,21 @@ void ace::read_ace_xs(){
 //                 (*(it->second.total))[j] = (*(it->second.total))[j] + (*(it->second.elastic))[j];
 //             }
 
-            //读取微观截面信息
+            //读取各反应产生的次级中子数(除弹性散射外)
+            XSS_index = JXS[4] - 1;
+            for(int i=0;i<NXS[3];i++){
+                it->second.second_particle_num_dis->push_back(XSS[XSS_index]);
+                XSS_index ++;
+            }
 
+//            for(int i=0;i<NXS[3];i++){
+//                std::cout <<  (*(it->second.reaction_mts))[i] <<"::::" << (*(it->second.second_particle_num_dis))[i] << "\t";
+//            }
+//            std::cout << "____________________________________" << std::endl;
+
+
+
+            //读取微观反应截面信息
             it->second.can_fissioable = (JXS[1] > 0);
 
             int mt_num,reaction_type,tmp_index,tmp_size,tmp_up;
@@ -185,11 +203,57 @@ void ace::read_ace_xs(){
 
             //读取碰撞后次级中子的角分布
 
-            for(int i=0;i<NXS[4]+1;i++){
+//            XSS_index = JXS[7] - 1;
+//            loc = JXS[8] - 1;
+
+//            for(int i=0;i<NXS[4]+1;i++){  //有次级中子产生的反应种类数
+
+//               tmp_loc = loc + int(XSS[XSS_index]) - 1;
+
+//               XSS_index1 = tmp_loc + 1;
+//               std::vector<double> *tmp_vector = new std::vector<double>();
+
+//               if(int(XSS[XSS_index]) > 0) {
+//                   for(int j=0;j<int(XSS[tmp_loc]);j++){
+//                        tmp_vector->push_back(XSS[XSS_index1]);
+//                        XSS_index1 ++;
+//                   }
+//               }
+//               it->second.angle_values->push_back(tmp_vector);
+//               XSS_index ++;
+
+//            }
 
 
 
+            //读取碰撞后次级中子的能量分布
+            XSS_index = JXS[9] - 1;
+            loc = JXS[10] - 1;
+
+            for(int i=0;i<NXS[4];i++){  //有次级中子产生的反应种类数(不包括弹性散射)
+
+               tmp_loc = loc + int(XSS[XSS_index]) - 1;
+
+               XSS_index1 = tmp_loc;
+               std::vector<double> *tmp_vector = new std::vector<double>();
+
+               std::cout << i << ":" << XSS[XSS_index] << "<----->"
+                         << ":" << XSS[XSS_index1] << ":" << XSS[XSS_index1+1]
+                         << ":" << XSS[XSS_index1+2] << ":" << XSS[XSS_index1+3]
+                         << "\t";
+
+//               if(int(XSS[XSS_index]) > 0) {
+//                   for(int j=0;j<(int(XSS[XSS_index+1])-int(XSS[XSS_index]));j++){
+////                        tmp_vector->push_back(XSS[XSS_index1]);
+//                       XSS_index1 ++;
+//                       std::cout << j << ":" << XSS[XSS_index1] << "\t";
+//                   }
+//               }
+               it->second.engery_values->push_back(tmp_vector);
+               XSS_index ++;
             }
+
+            std::cout << "----------------------" << std::endl;
 
 
 

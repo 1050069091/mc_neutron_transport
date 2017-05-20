@@ -91,13 +91,22 @@ void ace::read_ace_xs(){
 //            it->second.reaction_mts->push_back(2);
 //            it->second.Q_values->push_back(0.0);
 
+
             for(int i=0;i<NXS[3];i++){
                 it->second.reaction_mts->push_back(XSS[XSS_index]);
                 it->second.Q_values->push_back(XSS[XSS_index1]);
+                int mt_num = XSS[XSS_index];
+                if(!(mt_num>=101 || (mt_num>=18 && mt_num <=21) || mt_num==38)){
+                    it->second.nu_fission_index_in_reaction_mts->push_back(i);
+                }else if((mt_num>=18 && mt_num <=21) || mt_num==38){
+                    it->second.fission_index_in_reaction_mts->push_back(i);
+                }
                 XSS_index ++;
                 XSS_index1 ++;
             }
 
+
+            //读取个反应的微观截面
             int tmp_loc,loc;
 
             XSS_index = JXS[5] - 1;
@@ -127,8 +136,32 @@ void ace::read_ace_xs(){
             }
 
 
-            //读取散射信息
+            //读取裂变信息
             it->second.can_fissioable = (JXS[1] > 0);
+            if(it->second.can_fissioable){
+                int JXS1 = JXS[1];
+                int KNU = JXS1 - 1;
+                if(XSS[KNU] < 0){
+                    KNU = JXS1+1-1;
+                }
+                it->second.p_fission_second_particle->flag = XSS[KNU];
+                if(XSS[KNU] == 1){
+                   it->second.p_fission_second_particle->coefficients_length = XSS[KNU+1];
+                   for(int i=0;i<XSS[KNU+1];i++){
+                       it->second.p_fission_second_particle->coefficients->push_back(XSS[KNU+2+i]);
+                   }
+
+                }else{
+                    KNU = KNU+2+2*XSS[KNU+1];
+                    it->second.p_fission_second_particle->engery_length = XSS[KNU];
+                    for(int i=0;i<XSS[KNU];i++){
+                        it->second.p_fission_second_particle->engery_grid->push_back(XSS[KNU+1+i]);
+                        it->second.p_fission_second_particle->second_particle_nums->push_back(int(XSS[KNU+1+XSS[KNU]+i]));
+                    }
+                }
+
+
+            }
 
 
             //读取微观反应截面信息
@@ -138,7 +171,7 @@ void ace::read_ace_xs(){
             for(int i=0;i<NXS[3];i++){  //反应数（不包括弹性散射）
 
                 mt_num = (*(it->second.reaction_mts))[i];
-                if(mt_num>=101 && mt_num <=117){
+                if(mt_num>=101){
                     reaction_type = 1;//吸收
                 }else if((mt_num>=18 && mt_num <=21) || mt_num==38 ){
                     reaction_type = 2;//裂变

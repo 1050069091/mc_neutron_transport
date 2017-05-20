@@ -30,6 +30,7 @@ public:
     static const double PI;
 
     static int now_particle_num;
+    static int last_particle_num;
 
     static int absorption_num;
     static int elastic_num;

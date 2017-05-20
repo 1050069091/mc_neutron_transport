@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <angle_enger_dist.h>
+#include "fission_second_particle.h"
 
 class nuclide
 {
@@ -37,7 +38,9 @@ public:
 //    std::vector<std::vector<double> *> *engery_values;
 
 
+    //裂变信息
     bool can_fissioable;
+    fission_second_particle *p_fission_second_particle;
 
     //宏观截面信息
     int macro_length;
@@ -49,8 +52,10 @@ public:
     std::vector<double> *elastic;
     //fission
     std::vector<double> *fission;
+    std::vector<int> *fission_index_in_reaction_mts;
     //neutron production
     std::vector<double> *nu_fission;
+    std::vector<int> *nu_fission_index_in_reaction_mts;
     //absorption (MT > 100)
     std::vector<double> *absorption;
     //heating

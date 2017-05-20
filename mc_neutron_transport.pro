@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     nuclide.cpp \
     particle.cpp \
     source.cpp \
-    angle_enger_dist.cpp
+    angle_enger_dist.cpp \
+    fission_second_particle.cpp
 
 DISTFILES += \
     materials.xml
@@ -29,4 +30,5 @@ HEADERS += \
     nuclide.h \
     particle.h \
     source.h \
-    angle_enger_dist.h
+    angle_enger_dist.h \
+    fission_second_particle.h

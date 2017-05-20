@@ -1,28 +1,30 @@
 #include "particle.h"
 #include "global.h"
 
-particle::particle()
+particle::particle(bool is_init)
 {
-    this->init_info();
+    this->init_info(is_init);
 }
 
 
-void particle::init_info()
+void particle::init_info(bool is_init)
 {
     //init engery
 //    this->engery = global::gsource->min_engery +
 //            ((rand()%global::gsource->particle_num) / double(global::gsource->particle_num))
 //            *(global::gsource->max_engery-global::gsource->min_engery);
-    this->engery = global::gsource->min_engery +
-            ((rand()%RAND_MAX) / double(RAND_MAX))
-            *(global::gsource->max_engery-global::gsource->min_engery);
 
-    this->xyz[0] = global::gsource->site_xyz[0];
-    this->xyz[1] = global::gsource->site_xyz[1];
-    this->xyz[2] = global::gsource->site_xyz[2];
+    if(is_init){
+        this->engery = global::gsource->min_engery +
+                ((rand()%RAND_MAX) / double(RAND_MAX))
+                *(global::gsource->max_engery-global::gsource->min_engery);
 
-    this->random_init_particle_direction();
+        this->xyz[0] = global::gsource->site_xyz[0];
+        this->xyz[1] = global::gsource->site_xyz[1];
+        this->xyz[2] = global::gsource->site_xyz[2];
 
+        this->random_init_particle_direction();
+    }
 
     this->now_mat_total_cs = 0.0;
     this->is_alive = true;

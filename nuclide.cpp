@@ -14,6 +14,7 @@ nuclide::nuclide()
     this->key_in_xsmap = "NULL";
 
     this->can_fissioable = false;
+    this->p_fission_second_particle = new fission_second_particle();
 
     this->reaction_num = -1;
     this->reaction_mts = new std::vector<int>();
@@ -37,8 +38,10 @@ nuclide::nuclide()
     this->elastic = new std::vector<double>();
     //fission
     this->fission = new std::vector<double>();
-    //neutron production
+    this->fission_index_in_reaction_mts = new std::vector<int>();
+    //ielastic scattering execpt scattering
     this->nu_fission = new std::vector<double>();
+    this->nu_fission_index_in_reaction_mts = new std::vector<int>();
     //absorption (MT > 100)
     this->absorption = new std::vector<double>();
     //heating

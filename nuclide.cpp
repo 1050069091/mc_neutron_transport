@@ -6,6 +6,7 @@ nuclide::nuclide()
     //Z and A identifier, e.g. 92235
     this->zaid = -1.0;
     //Atomic Weight Ratio
+    this->A  =-1.0;
     this->awr = -1.0;
     //temperature in MeV (k*T)
     this->kT = -1.0;

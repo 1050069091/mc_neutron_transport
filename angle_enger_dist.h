@@ -12,6 +12,8 @@ public:
     std::vector<double> *engery_grid;
     std::vector<int> *loc_angle_val;
 
+    int type;
+
     std::vector<double *> *angle_vals_32;
 
     std::vector<int> *flags;

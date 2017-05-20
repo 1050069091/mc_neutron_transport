@@ -6,6 +6,8 @@ angle_enger_dist::angle_enger_dist()
     this->engery_grid = new std::vector<double>;
     this->loc_angle_val = new std::vector<int>;
 
+    this->type = 0;
+
     this->angle_vals_32 = new std::vector<double *>;
 
     this->flags = new std::vector<int>;

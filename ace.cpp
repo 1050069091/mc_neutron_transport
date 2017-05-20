@@ -60,6 +60,7 @@ void ace::read_ace_xs(){
 
             fin->close();
 
+            it->second.A = tmp_awr;
             it->second.kT = tmp_kT;//
             it->second.zaid = (*global::xsliistings)[it->first].zaid;
 
@@ -83,7 +84,6 @@ void ace::read_ace_xs(){
 
 
             //读取反应类型信息
-
             XSS_index = JXS[2] - 1;
             XSS_index1 = JXS[3] - 1;
             (it->second).reaction_num = NXS[3] /*+ 1*/;
@@ -118,22 +118,6 @@ void ace::read_ace_xs(){
                XSS_index ++;
             }
 
-//            std::cout << it->first << "---->" << NXS[3] << ":" << std::endl;
-//            for(int i=0;i<NXS[3];i++){
-//                std::cout << (*(it->second.reaction_mts))[i] << "="
-////                          << (*(it->second.Q_values))[i] << "="
-////                          << (*(it->second.thresholds))[i] << "="
-////                          << (*(it->second.reaction_cs_values))[i]->size() << "------->"<< NXS[2]
-//                          << std::endl;
-////                for(int j=0;j<(*(it->second.reaction_cs_values))[i]->size();j++){
-////                     std::cout << (*((*(it->second.reaction_cs_values))[i]))[j] << "   ";
-////                }
-//            }
-//            std::cout << std::endl;
-
-//             for(int j=0;j<NXS[2];j++){
-//                 (*(it->second.total))[j] = (*(it->second.total))[j] + (*(it->second.elastic))[j];
-//             }
 
             //读取各反应产生的次级中子数(除弹性散射外)
             XSS_index = JXS[4] - 1;
@@ -142,16 +126,12 @@ void ace::read_ace_xs(){
                 XSS_index ++;
             }
 
-//            for(int i=0;i<NXS[3];i++){
-//                std::cout <<  (*(it->second.reaction_mts))[i] <<"::::" << (*(it->second.second_particle_num_dis))[i] << "\t";
-//            }
-//            std::cout << "____________________________________" << std::endl;
 
+            //读取散射信息
+            it->second.can_fissioable = (JXS[1] > 0);
 
 
             //读取微观反应截面信息
-            it->second.can_fissioable = (JXS[1] > 0);
-
             int mt_num,reaction_type,tmp_index,tmp_size,tmp_up;
             double tmp_mi_cs_val;
 
@@ -189,18 +169,6 @@ void ace::read_ace_xs(){
 
             }
 
-//            for(int i=0;i<NXS[2];i++){
-//                std::cout<< "energy:" << (*(it->second.energy))[i]
-//                        << "\ttotal:" << (*(it->second.total))[i] << std::endl;
-////                             << "\telastic:" << (*(it->second.elastic))[i]
-////                                << "\tabsorption:" << (*(it->second.absorption))[i] << std::endl;
-////                if(it->second.can_fissioable){
-////                    std::cout << "fission:" << (*(it->second.fission))[i];
-////                }
-////                std::cout << "nu_fission:" << (*(it->second.nu_fission))[i]<< std::endl;
-
-//            }
-
 
             //读取碰撞后次级中子的角分布
             int LOBCi,LCj;
@@ -224,6 +192,8 @@ void ace::read_ace_xs(){
 
                     if(LCj > 0){  //32分布
 
+                        tmp_p_angle_enger_dist->type = 1;
+
                         double *tm_p_do = new double[32];
                         for(int k=0;k<32;k++){
                             *(tm_p_do + k) =
@@ -233,6 +203,8 @@ void ace::read_ace_xs(){
 
                     }else if(LCj < 0)
                     {
+
+                        tmp_p_angle_enger_dist->type = -1;
 
                         tmp_p_angle_enger_dist->flags->push_back(XSS[JXS8 - LCj -1]);
                         int tmp_size = XSS[JXS8 - LCj];
@@ -252,17 +224,13 @@ void ace::read_ace_xs(){
                         tmp_p_angle_enger_dist->consines->push_back(tmp_p_vector1);
                         tmp_p_angle_enger_dist->pdf->push_back(tmp_p_vector2);
                         tmp_p_angle_enger_dist->cdf->push_back(tmp_p_vector3);
+                    }else{
+                        tmp_p_angle_enger_dist->type = 0;
                     }
 //                    XSS_index1 ++;
                }
 
 
-//               if(int(XSS[XSS_index]) > 0) {
-//                   for(int j=0;j<int(XSS[tmp_loc]);j++){
-//                        tmp_vector->push_back(XSS[XSS_index1]);
-//                        XSS_index1 ++;
-//                   }
-//               }
                it->second.angle_values->push_back(tmp_p_angle_enger_dist);
 //               XSS_index ++;
             }

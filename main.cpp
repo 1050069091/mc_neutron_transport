@@ -9,5 +9,8 @@
 int main(int argc, char *argv[])
 {
     global::init();
+
+    global::simulate();
+
     return 0;
 }

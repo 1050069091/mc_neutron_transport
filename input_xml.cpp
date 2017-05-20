@@ -37,6 +37,8 @@ void input_xml::read_source_xml()
 
     global::gsource->particle_num = source_xml_node.child("particle_num").attribute("count").as_int();
 
+    global::now_particle_num = global::gsource->particle_num;
+
     global::gsource->max_angle = source_xml_node.child("direction").attribute("max_angle").as_double();
 
     tmp_xml = source_xml_node.child("default_engery");

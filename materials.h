@@ -15,7 +15,7 @@ public:
     static double density;
 
     static std::vector<double> *atom_density;//mat_total
-    static std::vector<double> *mat_total;
+//    static std::vector<double> *mat_total;
 //    static string xs_name;
 };
 

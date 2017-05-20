@@ -15,6 +15,7 @@ public:
     //Z and A identifier, e.g. 92235
     int zaid;
     //Atomic Weight Ratio
+    double A;
     double awr;
     //temperature in MeV (k*T)
     double kT;

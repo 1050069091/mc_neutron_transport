@@ -500,6 +500,7 @@ void global::simulate(){
     int recur = 0;
     int last_recur_particle = global::gsource->particle_num;
     int alive_particle_num = 0;
+    int last_produced_particle_num = global::gsource->particle_num;
 
     vector<particle>::iterator it;
 
@@ -508,8 +509,11 @@ void global::simulate(){
 
         recur ++;
         alive_particle_num = 0;
-        global::produce_particle_num = 0,global::dead_particle_num = 0,global::out_particle_num = 0;
 
+        if(recur > 1)
+            last_produced_particle_num = global::produce_particle_num;
+
+        global::produce_particle_num = 0,global::dead_particle_num = 0,global::out_particle_num = 0;
 
         for(it=global::gparticles->begin();it!=global::gparticles->end();it++){
             if(it->is_alive){
@@ -525,12 +529,14 @@ void global::simulate(){
 
         std::cout << "--------------------------------------------------------------" << std::endl;
         std::cout << "运输碰撞代数:" << recur << std::endl;
-        std::cout << "    新产生的中子数:" << global::produce_particle_num << std::endl
-                  << "    消亡的中子数(含逃出材料边界的中子数):" << global::dead_particle_num+global::out_particle_num << std::endl
-                  << "    有效增殖因子keff:" << global::produce_particle_num/double(global::dead_particle_num+global::out_particle_num+1) << std::endl
+        std::cout << "    初始中子数:" << global::gsource->particle_num << std::endl
+                  << "    上代新产生的中子数:" << last_produced_particle_num << std::endl
+                  << "    该代新产生的中子数:" << global::produce_particle_num << std::endl
+                  << "    消亡的中子数:" << global::dead_particle_num/*+global::out_particle_num*/ << std::endl
+                  << "    逃出材料边界的中子数:" << global::out_particle_num << std::endl
+                  << "    有效增殖因子keff:" << global::produce_particle_num/double(last_produced_particle_num)/*global::produce_particle_num/double(global::dead_particle_num+global::out_particle_num+1)*/ << std::endl
                   << "    当前总存活中子数:" << alive_particle_num-(global::dead_particle_num+global::out_particle_num)<< std::endl
-//                  << last_recur_particle << std::endl
-                  << "    逃出材料边界的中子数:" << global::out_particle_num << std::endl;
+                  ;
 
         if(recur > global::gsource->max_recur) return;
 

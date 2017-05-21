@@ -33,7 +33,7 @@ void ace::read_ace_xs(){
 
         if((*global::xsliistings)[it->first].filetype == global::ASCII){
 
-            fin = new std::ifstream((*global::xsliistings)[it->first].path,std::ios::in);
+            fin = new std::ifstream((*global::xsliistings)[it->first].path.c_str(),std::ios::in);
 
             for(int i=1;i<(*global::xsliistings)[it->first].location;i++)
                 (*fin) >> tmp_buf;

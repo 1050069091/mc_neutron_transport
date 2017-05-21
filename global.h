@@ -37,6 +37,8 @@ public:
     static int fission_num;
     static int nu_fission_num;
 
+    static int produce_particle_num,dead_particle_num,out_particle_num;
+
     static void convert_density();
     static double get_mat_total_val(double engery);
     static int binary_search(double gloal,std::vector<double> *tmp);

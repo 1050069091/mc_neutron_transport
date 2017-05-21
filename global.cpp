@@ -2,6 +2,7 @@
 #include "input_xml.h"
 #include "ace.h"
 #include "iostream"
+//#include <omp.h>
 
 
 map<string,xslisting> *global::xsliistings = new map<string,xslisting>;
@@ -15,6 +16,8 @@ int global::absorption_num = 0;
 int global::elastic_num = 0;
 int global::fission_num = 0;
 int global::nu_fission_num = 0;
+
+int global::produce_particle_num = 0,global::dead_particle_num = 0,global::out_particle_num = 0;
 
 const int global::ASCII = 0,global::BINARY = 1;
 const int global::ACE_NEUTRON = 0,global::ACE_THERMAL=1;
@@ -111,17 +114,11 @@ void global::convert_density(){
 
 void global::init_particles(){
 
-//    if(global::gparticles->capacity() < global::gsource->particle_num){
-////        global::gparticles->
-//    }
-
     for(int i=0;i<global::gsource->particle_num;i++){
         particle *tmp_particle = new particle(true);
         global::gparticles->push_back(*tmp_particle);
     }
-//    for(int i=0;i<global::gparticles->size();i++){
-//        std::cout << (*global::gparticles)[i].engery << "   " << (*global::gparticles)[i].xyz[0] << std::endl;
-//    }
+
 }
 
 
@@ -152,7 +149,10 @@ void global::transport(particle &p){
     }else{
         p.is_alive = false;
         p.is_out = true;
+//        std::cout << "1out" << global::now_particle_num << std::endl;
         global::now_particle_num = global::now_particle_num - 1;
+        global::out_particle_num += 1;
+//        std::cout << "2out" << global::now_particle_num << std::endl;
     }
 
 }
@@ -160,8 +160,12 @@ void global::transport(particle &p){
 void global::absorption(particle &p,nuclide &n){
     p.is_alive = false;
     p.is_absorption = true;
+//    std::cout << "1absorption" << global::now_particle_num << std::endl;
     global::now_particle_num = global::now_particle_num - 1;
+//    std::cout << "2absorption" << global::now_particle_num << std::endl;
     global::absorption_num = global::absorption_num + 1;
+
+    global::dead_particle_num += 1;
 }
 
 void global::elastic(particle &p,nuclide &n){
@@ -223,10 +227,12 @@ void global::elastic(particle &p,nuclide &n){
     p.engery = p.engery*(1+n.A*n.A+2*cm_cosa*n.A)/(1+n.A)/(1+n.A);
     if(p.engery <= 1e-6){
         p.is_alive = false;
+//        std::cout << "1elastic" << global::now_particle_num << std::endl;
         global::now_particle_num = global::now_particle_num - 1;
+        global::dead_particle_num += 1 ;
+//        std::cout << "2elastic" << global::now_particle_num << std::endl;
     }
     global::elastic_num ++;
-
 }
 
 void global::fission(particle &p,nuclide &n){
@@ -302,7 +308,11 @@ void global::fission(particle &p,nuclide &n){
         global::gparticles->push_back(new_particle);
     }
 
+//    std::cout << "1fission" << global::now_particle_num << std::endl;
     global::now_particle_num = global::now_particle_num + second_particle_num - 1;
+//    std::cout << "2fission" << global::now_particle_num << std::endl;
+
+    global::produce_particle_num += second_particle_num - 1;
 }
 
 void global::nu_fission(particle &p,nuclide &n){
@@ -314,18 +324,9 @@ void global::nu_fission(particle &p,nuclide &n){
     int second_particle_num = n.second_particle_num_dis->at(mts_index);
 
     double cosa,lb_cosa;
-//    angle_enger_dist *tmp_p_angle_enger_dist = n.angle_values->at(mts_index); //弹性散射的角分布（质心系）
 
-    //根据入射中子能量选则角分布序列
-//    int index = global::binary_search(p.engery,tmp_p_angle_enger_dist->engery_grid);
     double random_flo,random_angle;
     double new_uvw[3];
-//    int angle_index;
-
-//    std::cout << n.key_in_xsmap << ":::MT:::"
-//              << n.reaction_mts->at(n.nu_fission_index_in_reaction_mts->at(mts_index))
-//              << ":" << second_particle_num
-//              << std::endl;
 
     if(second_particle_num > 100){
         second_particle_num = second_particle_num - 99;
@@ -350,24 +351,6 @@ void global::nu_fission(particle &p,nuclide &n){
         random_flo = (rand()%RAND_MAX) / double(RAND_MAX);
         cosa = 2*random_flo - 1;
 
-//        if(tmp_p_angle_enger_dist->type > 0) //32分布
-//        {
-//            angle_index = floor(random_flo * 32);
-//            cosa = *((tmp_p_angle_enger_dist->angle_vals_32->at(index))+angle_index);
-
-//        }else if(tmp_p_angle_enger_dist->type < 0){
-
-//            for(int i=0;i<tmp_p_angle_enger_dist->angle_num->at(index);i++){
-//                if(random_flo <= (tmp_p_angle_enger_dist->cdf->at(index))->at(i)){
-//                    angle_index = i;
-//                    break;
-//                }
-//            }
-//            cosa = (tmp_p_angle_enger_dist->consines->at(index))->at(angle_index);
-
-//        }else{
-//            cosa = 2*random_flo - 1;
-//        }
         //坐标系转换
         if(second_particle_num < 0){  //质心系
             //质心系到实验室系的转换
@@ -406,7 +389,10 @@ void global::nu_fission(particle &p,nuclide &n){
 
     p.is_alive = false;
 
+//    std::cout << "1nu_fission" << global::now_particle_num << std::endl;
     global::now_particle_num = global::now_particle_num + abs(second_particle_num) - 1;
+//    std::cout << "2nu_fission" << global::now_particle_num << std::endl;
+    global::produce_particle_num += abs(second_particle_num) - 1;
 }
 
 void global::collision(particle &p){
@@ -417,7 +403,6 @@ void global::collision(particle &p){
     nuclide goal_n;
     global::choose_nuclide(goal_n,p);
 
-//    std::cout << "name:" << goal_n.name << goal_n.awr<< std::endl;
     //发生哪种反应
     switch (global::choose_reaction_type(goal_n,p)) {
     case 0:
@@ -442,16 +427,16 @@ int global::choose_reaction_type(nuclide &goal_n,particle &p){
     double random_flo = (rand()%RAND_MAX) / double(RAND_MAX);
 
     if(random_flo <= goal_n.elastic->at(index)/goal_n.total->at(index)){
-        std::cout << "elastic" << std::endl;
+//        std::cout << "elastic" << std::endl;
         return 0;   //弹性散射
-    }else if(random_flo <=(goal_n.elastic->at(index)+goal_n.absorption->at(index))/goal_n.total->at(index)){
-        std::cout << "absorption" << std::endl;
+    }else if(random_flo <= 1.06*(goal_n.elastic->at(index)+goal_n.absorption->at(index))/goal_n.total->at(index)){
+//        std::cout << "absorption" << std::endl;
         return 1;   //吸收
     }else if(goal_n.can_fissioable && (random_flo <= (1-goal_n.nu_fission->at(index)/goal_n.total->at(index)))){
-        std::cout << "fission" << std::endl;
+//        std::cout << "fission" << std::endl;
         return 2;   //裂变
     }else{
-        std::cout << "nu_fission" << std::endl;
+//        std::cout << "nu_fission" << std::endl;
         return 3;   //除裂变外的非弹性散射
     }
 
@@ -478,9 +463,6 @@ void global::choose_nuclide(nuclide &goal_n,particle &p){
             c_mat_total2 = c_mat_total1 + (it->second.awr * (*(it->second.total))[index]);
         }
 
-        //std::cout << it->first << ":" << random_flo << ": (" << c_mat_total1 << "," << c_mat_total2 << ")" << std::endl;
-//        std::cout << it->first << ":" << random_flo <<  ": (" << c_mat_total1/mat_total_cs << "," << c_mat_total2/mat_total_cs << ")" << std::endl;
-
         if(random_flo <= c_mat_total2/mat_total_cs && random_flo > c_mat_total1/mat_total_cs){
             goal_n = it->second;
             break;
@@ -493,24 +475,41 @@ void global::simulate(){
 
     int recur = 0;
     int last_recur_particle = global::gsource->particle_num;
+    int alive_particle_num = 0;
+
+
 
     while(1){
 
         recur ++;
+        alive_particle_num = 0;
+        global::produce_particle_num = 0,global::dead_particle_num = 0,global::out_particle_num = 0;
+//#pragma omp parallel
+//    {
+//#pragma omp for
+            for(int i=0;i<last_recur_particle;i++){
 
-        for(int i=0;i<last_recur_particle;i++){
+                if(global::gparticles->at(i).is_alive){
+                    alive_particle_num ++;
+                    global::transport(global::gparticles->at(i));
+                    global::collision(global::gparticles->at(i));
+                }
+            }
 
-            global::transport(global::gparticles->at(i));
-            global::collision(global::gparticles->at(i));
+            last_recur_particle = global::gparticles->size();
 
+            std::cout << "运输碰撞代数:" << recur << std::endl;
+            std::cout << "    新产生的中子数:" << global::produce_particle_num << std::endl
+                      << "    消亡的中子数(含逃出材料边界的中子数):" << global::dead_particle_num+global::out_particle_num << std::endl
+                      << "    有效增殖因子keff:" << global::produce_particle_num/double(global::dead_particle_num+global::out_particle_num+1) << std::endl
+                      << "    当前总存活中子数:" << alive_particle_num-(global::dead_particle_num+global::out_particle_num)
+                      << std::endl
+                      << "    逃出材料边界的中子数:" << global::out_particle_num << std::endl;
+
+            if(recur > global::gsource->max_recur) return;
+            if(alive_particle_num <= 0) return;
         }
-
-        last_recur_particle = global::gsource->particle_num;
-        std::cout << now_particle_num << "--------------->" << recur << "<-------------------" <<now_particle_num<< std::endl;
-        if(global::now_particle_num < 0){
-            return;
-        }
-    }
+//    }
 
 }
 

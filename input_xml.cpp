@@ -50,6 +50,9 @@ void input_xml::read_source_xml()
     global::gsource->site_xyz[1] = tmp_xml.attribute("y").as_double();
     global::gsource->site_xyz[2] = tmp_xml.attribute("z").as_double();
 
+    tmp_xml = source_xml_node.child("max_recur");//max_recur
+    global::gsource->max_recur = tmp_xml.attribute("value").as_int();
+
 //    std::cout << global::gsource->particle_num << "\t"
 //                 << global::gsource->max_angle << "\t"
 //                    << global::gsource->max_engery << "\t"

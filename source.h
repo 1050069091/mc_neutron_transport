@@ -11,6 +11,8 @@ public:
     double site_xyz[3];
     double min_engery,max_engery;
     double max_angle;
+
+    int max_recur;
 };
 
 #endif // SOURCE_H

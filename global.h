@@ -32,6 +32,8 @@ public:
     static int now_particle_num;
     static int last_particle_num;
 
+//    static int max_alive_particle_index;
+
     static int absorption_num;
     static int elastic_num;
     static int fission_num;
@@ -45,6 +47,7 @@ public:
 
     static void init_particles();
     static void init();
+    static void post_handle();
 
     static void transport(particle &p);
     static void collision(particle &p);

@@ -38,6 +38,7 @@ void input_xml::read_source_xml()
     global::gsource->particle_num = source_xml_node.child("particle_num").attribute("count").as_int();
 
     global::now_particle_num = global::gsource->particle_num;
+//    global::max_alive_particle_index = global::gsource->particle_num - 1;
 
     global::gsource->max_angle = source_xml_node.child("direction").attribute("max_angle").as_double();
 
@@ -98,7 +99,7 @@ void input_xml::read_materials_xml()
     tmp_xml_node = materials_xml_node.child("density");
     global::gmaterials->density = tmp_xml_node.attribute("value").as_double();
 
-    for (pugi::xml_node tmp_node: materials_xml_node.children("nuclide"))
+    for (pugi::xml_node tmp_node=materials_xml_node.child("nuclide");tmp_node;tmp_node=tmp_node.next_sibling("nuclide"))
     {
         tmp_nuclide = new nuclide();
         tmp_nuclide->name = tmp_node.attribute("name").as_string();
@@ -152,7 +153,7 @@ void input_xml::read_cross_sections_xml()
 
 //    std::cout << filetype << recl << entries << std::endl;
 
-    for (pugi::xml_node tmp_node: cross_sections_xml_node.children("ace_table"))
+    for (pugi::xml_node tmp_node=cross_sections_xml_node.child("ace_table");tmp_node;tmp_node=tmp_node.next_sibling("ace_table"))
     {
         p_tmp_xslisting = new xslisting();
 

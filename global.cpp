@@ -29,6 +29,28 @@ global::global(){
 
 }
 
+void global::post_handle(){
+
+    //材料所占内存
+//    for(map<string,nuclide>::iterator it=global::gmaterials->nuclides->begin();
+//        it !=global::gmaterials->nuclides->end();it++){
+//        free(&(it->second));
+//    }
+    global::gmaterials->nuclides->clear();
+    free(global::gmaterials);
+
+    //粒子所占内存
+//    for(vector<particle>::iterator it=global::gparticles->begin();it!=global::gparticles->end();it++){
+//        free(&(it->second));
+//    }
+    global::gparticles->clear();
+    free(global::gparticles);
+
+    //源所在内存
+    free(global::gsource);
+
+}
+
 void global::init(){
 
     input_xml::read_xml();
@@ -153,6 +175,8 @@ void global::transport(particle &p){
         global::now_particle_num = global::now_particle_num - 1;
         global::out_particle_num += 1;
 //        std::cout << "2out" << global::now_particle_num << std::endl;
+
+//        particle *tmp_p = &p
     }
 
 }
@@ -477,6 +501,7 @@ void global::simulate(){
     int last_recur_particle = global::gsource->particle_num;
     int alive_particle_num = 0;
 
+    vector<particle>::iterator it;
 
 
     while(1){
@@ -484,32 +509,33 @@ void global::simulate(){
         recur ++;
         alive_particle_num = 0;
         global::produce_particle_num = 0,global::dead_particle_num = 0,global::out_particle_num = 0;
-//#pragma omp parallel
-//    {
-//#pragma omp for
-            for(int i=0;i<last_recur_particle;i++){
 
-                if(global::gparticles->at(i).is_alive){
-                    alive_particle_num ++;
-                    global::transport(global::gparticles->at(i));
-                    global::collision(global::gparticles->at(i));
-                }
+
+        for(it=global::gparticles->begin();it!=global::gparticles->end();it++){
+            if(it->is_alive){
+                alive_particle_num ++;
+                global::transport((*it));
+                global::collision((*it));
+            }else{
+                global::gparticles->erase(it);
             }
-
-            last_recur_particle = global::gparticles->size();
-
-            std::cout << "运输碰撞代数:" << recur << std::endl;
-            std::cout << "    新产生的中子数:" << global::produce_particle_num << std::endl
-                      << "    消亡的中子数(含逃出材料边界的中子数):" << global::dead_particle_num+global::out_particle_num << std::endl
-                      << "    有效增殖因子keff:" << global::produce_particle_num/double(global::dead_particle_num+global::out_particle_num+1) << std::endl
-                      << "    当前总存活中子数:" << alive_particle_num-(global::dead_particle_num+global::out_particle_num)
-                      << std::endl
-                      << "    逃出材料边界的中子数:" << global::out_particle_num << std::endl;
-
-            if(recur > global::gsource->max_recur) return;
-            if(alive_particle_num <= 0) return;
         }
-//    }
+
+        last_recur_particle = global::gparticles->size();
+
+        std::cout << "--------------------------------------------------------------" << std::endl;
+        std::cout << "运输碰撞代数:" << recur << std::endl;
+        std::cout << "    新产生的中子数:" << global::produce_particle_num << std::endl
+                  << "    消亡的中子数(含逃出材料边界的中子数):" << global::dead_particle_num+global::out_particle_num << std::endl
+                  << "    有效增殖因子keff:" << global::produce_particle_num/double(global::dead_particle_num+global::out_particle_num+1) << std::endl
+                  << "    当前总存活中子数:" << alive_particle_num-(global::dead_particle_num+global::out_particle_num)<< std::endl
+//                  << last_recur_particle << std::endl
+                  << "    逃出材料边界的中子数:" << global::out_particle_num << std::endl;
+
+        if(recur > global::gsource->max_recur) return;
+
+        if(alive_particle_num <= 0) return;
+    }
 
 }
 

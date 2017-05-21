@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
 
     global::simulate();
 
+    global::post_handle();
+
     end_time = time(NULL);
 
     std::cout << "---------------------串行mc中子输运程序----------------------"<< std::endl;

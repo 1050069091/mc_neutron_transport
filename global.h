@@ -24,6 +24,7 @@ public:
     static materials *gmaterials;
     static source *gsource;
     static vector<particle> *gparticles;
+    static vector<particle> *new_produce_gparticles;
 
     static const int BINARY,ASCII,ACE_NEUTRON,ACE_THERMAL;
     static const double N_AVOGADRO,MASS_NEUTRON;

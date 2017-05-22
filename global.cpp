@@ -10,6 +10,7 @@ materials *global::gmaterials = new materials();
 
 source *global::gsource = new source();
 vector<particle> *global::gparticles = new vector<particle>;
+vector<particle> *global::new_produce_gparticles = new vector<particle>;
 
 int global::now_particle_num = 0;
 int global::absorption_num = 0;
@@ -329,7 +330,7 @@ void global::fission(particle &p,nuclide &n){
         new_particle->uvw[1] = new_uvw[1];
         new_particle->uvw[2] = new_uvw[2];
 
-        global::gparticles->push_back(new_particle);
+        global::new_produce_gparticles->push_back(new_particle);
     }
 
 //    std::cout << "1fission" << global::now_particle_num << std::endl;
@@ -408,7 +409,7 @@ void global::nu_fission(particle &p,nuclide &n){
         //得到中子出射能量
         new_particle->engery = pow((n.A/(n.A+1)),2)*(p.engery-(n.A+1)*n.Q_values->at(mts_index)/n.A);
 
-        global::gparticles->push_back(new_particle);
+        global::new_produce_gparticles->push_back(new_particle);
     }
 
     p.is_alive = false;
@@ -515,13 +516,21 @@ void global::simulate(){
 
         global::produce_particle_num = 0,global::dead_particle_num = 0,global::out_particle_num = 0;
 
-        for(it=global::gparticles->begin();it!=global::gparticles->end();it++){
+
+        for(it=global::new_produce_gparticles->begin();it!=global::new_produce_gparticles->end();it++){
+            global::gparticles->push_back(*it);
+        }
+
+        global::new_produce_gparticles->clear();
+
+        for(it=global::gparticles->begin();it!=global::gparticles->end();){
             if(it->is_alive){
                 alive_particle_num ++;
                 global::transport((*it));
                 global::collision((*it));
+                it++;
             }else{
-                global::gparticles->erase(it);
+                it = global::gparticles->erase(it);
             }
         }
 
